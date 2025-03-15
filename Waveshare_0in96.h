@@ -4,6 +4,18 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+#define BLACK       0x0000  // 黑色
+#define WHITE       0xFFFF  // 白色
+#define RED         0xF800  // 红色
+#define GREEN       0x07E0  // 绿色
+#define BLUE        0x001F  // 蓝色
+#define CYAN        0x07FF  // 青色
+#define MAGENTA     0xF81F  // 洋红色
+#define YELLOW      0xFFE0  // 黄色
+#define ORANGE      0xFC00  // 橙色
+#define PURPLE      0x780F  // 紫色
+#define GRAY        0x8410  // 灰色
+
 #define LCD_CS     9   // Chip Select
 #define LCD_DC     8   // Data/Command
 #define LCD_RST    12  // Reset
