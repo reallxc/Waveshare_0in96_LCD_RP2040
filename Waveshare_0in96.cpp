@@ -28,6 +28,14 @@ static void LCD_0IN96_SendData_8Bit(uint8_t data) {
     digitalWrite(LCD_CS, HIGH);
 }
 
+static void LCD_0IN96_SendData_16Bit(uint16_t data) {
+    digitalWrite(LCD_DC, HIGH);
+    digitalWrite(LCD_CS, LOW);
+    SPI1.transfer((data >> 8) & 0xFF);
+    SPI1.transfer(data);
+    digitalWrite(LCD_CS, HIGH);
+}
+
 static void LCD_0IN96_InitReg(void)
 {
     LCD_0IN96_SendCommand(0x11); // Sleep out
@@ -188,4 +196,38 @@ void LCD_0IN96_Clear(uint16_t color) {
         SPI1.transfer(color & 0xFF);
     }
     digitalWrite(LCD_CS, HIGH);
+}
+
+void LCD_0IN96_Display(uint16_t *Image)
+{
+    uint16_t j;
+    LCD_0IN96_SetWindows(0, 0, LCD_0IN96.WIDTH-1, LCD_0IN96.HEIGHT-1);
+    digitalWrite(LCD_DC, 1);
+    digitalWrite(LCD_CS, 0);
+    for (j = 0; j < LCD_0IN96.HEIGHT; j++) {
+        SPI1.transfer((uint8_t *)&Image[j*LCD_0IN96.WIDTH], LCD_0IN96.WIDTH*2);
+    }
+    digitalWrite(LCD_CS, 1);
+}
+
+void LCD_0IN96_DisplayWindows(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yend, uint16_t *Image)
+{
+    // display
+    uint32_t Addr = 0;
+
+    uint16_t j;
+    LCD_0IN96_SetWindows(Xstart, Ystart, Xend , Yend);
+    digitalWrite(LCD_DC, 1);
+    digitalWrite(LCD_CS, 0);
+    for (j = Ystart; j < Yend - 1; j++) {
+        Addr = Xstart + j * LCD_0IN96.WIDTH ;
+        SPI1.transfer((uint8_t *)&Image[Addr], (Xend-Xstart)*2);
+    }
+    digitalWrite(LCD_CS, 1);
+}
+
+void LCD_0IN96_DisplayPoint(uint16_t X, uint16_t Y, uint16_t Color)
+{
+    LCD_0IN96_SetWindows(X,Y,X,Y);
+    LCD_0IN96_SendData_16Bit(Color);
 }
